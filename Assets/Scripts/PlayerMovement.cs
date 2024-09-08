@@ -6,20 +6,37 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed;
     private Rigidbody2D rb;
-    // Start is called before the first frame update
+    private SpriteRenderer spriteRenderer;
+    private Animator anim;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        rb.velocity = new Vector2(Input.GetAxis("Horizontal") * speed, rb.velocity.y);
+        float horizontalInput = Input.GetAxis("Horizontal");
+        rb.velocity = new Vector2(horizontalInput * speed, rb.velocity.y);
+
+        // Flip sprite instead of scaling
+        if (horizontalInput > 0.01f)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else if (horizontalInput < -0.01f)
+        {
+            spriteRenderer.flipX = false;
+        }
 
         if (Input.GetKey(KeyCode.Space))
         {
             rb.velocity = new Vector2(rb.velocity.x, speed);
         }
+
+        //Set animator parameters
+        anim.SetBool("run", horizontalInput != 0);
     }
 }
